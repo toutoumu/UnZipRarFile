@@ -9,7 +9,6 @@ import android.webkit.MimeTypeMap;
 import com.gstar.andy.unzipsample.MyApplication;
 import com.gstar.andy.unzipsample.R;
 import com.gstar.andy.unzipsample.bean.FileModel;
-import com.zhy.base.fileprovider.FileProvider7;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -549,14 +548,14 @@ public class FileUtils {
     private static String getAvailableFilesPathAndroidData(boolean boolToCache) {
         if (!isSDExist()) {
             if (boolToCache) {
-                return MyApplication.getContext().getCacheDir().getAbsolutePath() + "/";
+                return MyApplication.getContext().getCacheDir().getAbsolutePath();
             }
-            return MyApplication.getContext().getFilesDir().getAbsolutePath() + "/";
+            return MyApplication.getContext().getFilesDir().getAbsolutePath();
         } else {
             if (boolToCache) {
-                return MyApplication.getContext().getExternalCacheDir().getAbsolutePath() + "/";
+                return MyApplication.getContext().getExternalCacheDir().getAbsolutePath();
             }
-            return MyApplication.getContext().getExternalFilesDir("").getAbsolutePath() + "/";
+            return MyApplication.getContext().getExternalFilesDir("").getAbsolutePath();
         }
     }
 }

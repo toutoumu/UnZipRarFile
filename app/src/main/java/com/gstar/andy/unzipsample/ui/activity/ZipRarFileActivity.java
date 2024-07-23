@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -144,7 +145,7 @@ public class ZipRarFileActivity extends AppCompatActivity {
         if (!TextUtils.isEmpty(zipRarFilePath)) {
             strCurrectPath = zipRarFilePath;
             tvPath.setText(zipRarFilePath);
-            //预览zip/rar文件内容列表
+            // 预览zip/rar文件内容列表
             readZipOrRarFileContentList(new File(zipRarFilePath));
         }
     }
@@ -164,9 +165,9 @@ public class ZipRarFileActivity extends AppCompatActivity {
                 } else {
                     zipOrRarFileModelList = UnZipManager.getInstance().getZipFileAllList(zipRarFile);
                 }
-                //如果不是刷新的操作再去显示路径和递增，避免层级错乱
+                // 如果不是刷新的操作再去显示路径和递增，避免层级错乱
                 splitIndex++;
-                //根据路径预览,首次进入zip/rar文件内部路径为空
+                // 根据路径预览,首次进入zip/rar文件内部路径为空
                 layeredShowByPath(zipOrRarFileModelList, "");
             }
         });
@@ -179,7 +180,7 @@ public class ZipRarFileActivity extends AppCompatActivity {
      * @param zipRarFileInnerPath
      */
     private void layeredShowByPath(final List<FileModel> zipRarFileList, final String zipRarFileInnerPath) {
-        //显示路径
+        // 显示路径
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -189,11 +190,11 @@ public class ZipRarFileActivity extends AppCompatActivity {
         List<FileModel> showRarFiles = new ArrayList<>();
         if (zipRarFileList != null && zipRarFileList.size() > 0) {
             for (FileModel fileModel : zipRarFileList) {
-                //路径为空表示第一层级
+                // 路径为空表示第一层级
                 if (TextUtils.isEmpty(zipRarFileInnerPath) && !fileModel.getFilePath().contains("\\")) {
                     showRarFiles.add(fileModel);
                 }
-                //拆分层级
+                // 拆分层级
                 if (!TextUtils.isEmpty(zipRarFileInnerPath) && fileModel.getFilePath().startsWith(zipRarFileInnerPath + "\\")
                         && fileModel.getFilePath().split("\\\\").length < splitIndex) {
                     String[] splitFileName = fileModel.getFileName().split("\\\\");
@@ -251,18 +252,19 @@ public class ZipRarFileActivity extends AppCompatActivity {
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 if (showZipRarFileList != null && showZipRarFileList.size() > 0) {
                     final FileModel fileModel = showZipRarFileList.get(position);
-                    //如果预览是文件夹
+                    // 如果预览是文件夹
                     if (fileModel.isDir()) {
                         splitIndex++;
                         strCurrectPath = fileModel.getFilePath();
                         layeredShowByPath(zipOrRarFileModelList, strCurrectPath);
                     }
-                    //如果预览是文件
+                    // 如果预览是文件
                     else {
-                        //缓存路径
+                        // 缓存路径
                         final String outPath = FileUtils.getAppTempPath();
+                        Log.d("Output", "outPath:" + outPath);
                         String rarOutFilePath = "";
-                        //如果预览的是zip的内容,判断是否有密码
+                        // 如果预览的是zip的内容,判断是否有密码
                         if (zipRarFilePath.endsWith(".zip")) {
                             boolean hasPassword = UnZipManager.getInstance().checkZipFileHasPassword(zipRarFilePath);
                             if (hasPassword) {
@@ -271,7 +273,7 @@ public class ZipRarFileActivity extends AppCompatActivity {
                                 rarOutFilePath = UnZipManager.getInstance().unZipFileSingle(zipRarFilePath, outPath, fileModel.getFilePath(), "");
                             }
                         }
-                        //如果预览的是rar的内容,判断是否有密码
+                        // 如果预览的是rar的内容,判断是否有密码
                         else {
                             boolean hasPassword = UnRarManager.getInstance().checkRarFileHasPassword(new File(zipRarFilePath));
                             if (hasPassword) {
@@ -303,7 +305,7 @@ public class ZipRarFileActivity extends AppCompatActivity {
                     } else {
                         rarFileInnerPath = filePathList.get(position);
                     }
-                    //用于区分选择的层级
+                    // 用于区分选择的层级
                     splitIndex = position + 3;
                     layeredShowByPath(zipOrRarFileModelList, rarFileInnerPath);
                 }
@@ -354,7 +356,7 @@ public class ZipRarFileActivity extends AppCompatActivity {
         FileUtils.sortFileModelList(showZipRarFileList, "fileName", true);
         fileListAdapter.replaceData(showZipRarFileList);
         fileListAdapter.notifyDataSetChanged();
-        //路径刷新
+        // 路径刷新
         filePathAdapter.replaceData(filePathList);
         filePathAdapter.notifyDataSetChanged();
     }
@@ -403,7 +405,7 @@ public class ZipRarFileActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK && data != null) {
             String selectedPath = data.getStringExtra("selectedPath");
             selectedPath = selectedPath + "/" + FileUtils.getFileNameNoExtension(zipRarFilePath);
-            //判断是否有密码
+            // 判断是否有密码
             boolean hasPassword;
             if (zipRarFilePath.endsWith(".zip")) {
                 hasPassword = UnZipManager.getInstance().checkZipFileHasPassword(zipRarFilePath);

@@ -48,7 +48,7 @@ public class UnRarManager {
             List<FileHeader> fileHeaders = archive.getFileHeaders();
             for (FileHeader fileHeader : fileHeaders) {
                 String fileName;
-                //解決中文乱码
+                // 解決中文乱码
                 if (fileHeader.isUnicode()) {
                     fileName = fileHeader.getFileNameW().trim();
                 } else {
@@ -103,7 +103,7 @@ public class UnRarManager {
             for (FileHeader fileHeader : fileHeaders) {
                 FileModel item = new FileModel();
                 String fileName;
-                //解決中文乱码
+                // 解決中文乱码
                 if (fileHeader.isUnicode()) {
                     fileName = fileHeader.getFileNameW().trim();
                 } else {
@@ -155,6 +155,9 @@ public class UnRarManager {
         if (TextUtils.isEmpty(outPathString)) {
             outPathString = rarFile.getParentFile().getPath();
         }
+        if (!new File(outPathString).exists()) {
+            new File(outPathString).mkdirs();
+        }
         FileOutputStream fileOutputStream = null;
         Archive archive = null;
         String fileHeaderName;
@@ -162,7 +165,7 @@ public class UnRarManager {
             archive = new Archive(rarFile, password);
             List<FileHeader> fileHeaders = archive.getFileHeaders();
             for (FileHeader fileHeader : fileHeaders) {
-                //解決中文乱码
+                // 解決中文乱码
                 if (fileHeader.isUnicode()) {
                     fileHeaderName = fileHeader.getFileNameW().trim();
                 } else {
